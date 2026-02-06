@@ -56,9 +56,13 @@ npm run worker
 Author
 
 Aniket
+
 Computer Science Graduate
+
 Backend Developer (Node.js, Spring Boot, Prisma, SQL, NoSQL)
+
 GitHub:
+
 https://github.com/aniket709
 
 
