@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url  = env("DATABASE_URL")
+
+}
+
+ model EmailJob {
+  id           String   @id @default(uuid())
+  subject      String
+  body         String
+  scheduledAt  DateTime
+  status       JobStatus @default(SCHEDULED)
+
+  recipients   EmailRecipient[]
+
+  createdAt    DateTime @default(now())
+}
+
+model EmailRecipient {
+  id        String @id @default(uuid())
+  email     String
+  status    RecipientStatus @default(SCHEDULED)
+
+  sentAt    DateTime?
+  error     String?
+
+  job       EmailJob @relation(fields: [jobId], references: [id])
+  jobId     String
+}
+
+enum JobStatus {
+  SCHEDULED
+  PROCESSING
+  SENT
+  FAILED
+}
+
+enum RecipientStatus {
+  SCHEDULED
+  SENT
+  FAILED
+}
+

@@ -1,0 +1,1 @@
+{"root":["./src/main.ts","./src/config/redis.ts","./src/controllers/email.controller.ts","./src/prisma/prismaconfig.ts","./src/queue/email.queue.ts","./src/queue/worker.queue.ts","./src/routes/email.routes.ts","./src/service/email.scheduler.ts","./src/service/email.service.ts","./src/service/ratelimit.service.ts"],"version":"5.8.3"}
