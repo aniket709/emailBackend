@@ -51,3 +51,66 @@ export async function scheduleEmail(
   );
   return job;
 }
+export async function findEmailById(
+  id : any
+){
+try {
+  const emailId = await prisma.emailJob.findUnique({
+    where:{
+      id:id
+    }
+  })
+  return emailId;
+} catch (error:any){
+  console.log("error",error);
+throw error;
+}
+}
+export async function scheduleStatus(){
+  try{
+  const email = await prisma.emailJob.findMany({
+   where:{
+    status:'SCHEDULED',
+   },
+   orderBy:{
+    createdAt:'desc'
+   }
+  })
+  return email;
+  } catch(error:any){
+    console.log("error",error);
+  }
+
+}
+export async function sentEmail(){
+  
+  try{
+    const email = await prisma.emailJob.findMany({
+      where:{
+        status:'SENT',
+      },
+      orderBy:{
+        createdAt:'desc'
+      }
+    })
+    return email;
+  } catch (error){
+    console.log("error",error)
+  }
+}
+export async function processingEmail(){
+  
+  try{
+    const email = await prisma.emailJob.findMany({
+      where:{
+        status:'PROCESSING',
+      },
+      orderBy:{
+        createdAt:'desc'
+      }
+    })
+    return email;
+  } catch (error){
+    console.log("error",error)
+  }
+}

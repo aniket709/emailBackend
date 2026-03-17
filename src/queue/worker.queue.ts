@@ -59,8 +59,6 @@ const worker = new Worker(
     concurrency: Number(process.env.WORKER_CONCURRENCY || 5)
   }
 );
-
-
 worker.on("completed", job => {
   console.log(`Job completed ${job.id}`);
 });
