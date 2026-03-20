@@ -16,13 +16,32 @@ console.log("SMTP USER:", process.env.SMTP_USER);
 console.log("SMTP HOST:", process.env.SMTP_HOST);
 
 
-export async function sendEmail(to: string, subject: string, body: string) {
+// export async function sendEmail(to: string, subject: string, body: string) {
+//   const transporter = await transporterPromise;
+
+//   const info = await transporter.sendMail({
+//     from: '"Scheduler" <scheduler@test.com>',
+//     to,
+//     subject:"Test",
+//     text: "Test is successfull"
+//   });
+// }
+
+export async function sendEmail(
+  to: string,
+  subject: string,
+  body: string,
+  attachments?: { filename: string; path: string }[]
+) {
   const transporter = await transporterPromise;
 
   const info = await transporter.sendMail({
     from: '"Scheduler" <scheduler@test.com>',
     to,
-    subject:"Test",
-    text: "Test is successfull"
+    subject,         
+    html: body,       
+    attachments,      
   });
+
+  console.log(" Email sent:", info.messageId);
 }

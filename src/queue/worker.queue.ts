@@ -1,4 +1,3 @@
-
 import "dotenv/config";
 import { Worker, Job } from "bullmq";
 import { redis } from "../config/redis";
@@ -8,7 +7,7 @@ import { prisma } from "../prisma/prismaConfig";
 const worker = new Worker(
   "email-queue",
   async (job: Job) => {
-    const { to, subject, body,jobId } = job.data;
+    const { to, subject, body,jobId,fields } = job.data;
 
     try {
       await prisma.emailJob.update({
@@ -19,7 +18,28 @@ const worker = new Worker(
           status:'PROCESSING'
         }
       });
-      await sendEmail(to, subject, body);
+      const email = await prisma.emailJob.findUnique({
+        where: { id: jobId },
+        include: {
+          recipients: true,
+          attachments: true, 
+        },
+      });
+
+      if (!email) throw new Error("Email not found");
+      
+      console.log("Attachments:", email.attachments);
+      await sendEmail(
+        email.recipients[0].email,
+        email.subject,
+        email.body,
+        email.attachments.map(file => ({
+          filename: file.fileName,
+          path: file.url,
+        }))
+      );
+      // await sendEmail(to, subject, body);
+
       await prisma.emailRecipient.updateMany({
         where:{
           jobId:jobId,

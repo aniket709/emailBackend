@@ -6,9 +6,9 @@ const router = Router();
 
 
 router.post("/schedule", async (req, res) => {
-  const { to,jobId, subject, body, scheduledAt } = req.body;
+  const { to,jobId, subject, body, scheduledAt,fields } = req.body;
 
-  await scheduleEmail(to, subject, body, new Date(scheduledAt));
+  await scheduleEmail(to, subject, body, new Date(scheduledAt),fields);
 
   res.json({ success: true });
 });

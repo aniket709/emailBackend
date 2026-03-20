@@ -1,4 +1,4 @@
-import { UUID } from "crypto";
+
 import { prisma } from "../prisma/prismaConfig";
 import { emailQueue } from "../queue/email.queue";
 
@@ -6,13 +6,22 @@ export async function scheduleEmail(
   to: string,
   subject: string,
   body: string,
-  scheduledAtInput: string | Date
+  scheduledAtInput: string | Date,
+  fileIds?: number[]
 ) {
+
+  console.log("fileIds received:", fileIds);
+
   const job = await prisma.emailJob.create({
     data: {
       subject,
       body,
       scheduledAt: new Date(scheduledAtInput),
+      // attachments: fileIds
+      // ? {
+      //     connect: fileIds.map((id: number) => ({ id })),
+      //   }
+      // : undefined,
       recipients: {
         create: [
           {
@@ -25,6 +34,23 @@ export async function scheduleEmail(
       recipients: true
     }
   });
+  if (fileIds?.length) {
+    await prisma.fileUpload.updateMany({
+      where: {
+        id: { in: fileIds },
+      },
+      data: {
+        emailJobId: job.id,
+      },
+    });
+
+  console.log("Linking files:", fileIds, "to job:", job.id);
+const updatedFiles = await prisma.fileUpload.findMany({
+  where: { id: { in: fileIds || [] } }
+});
+console.log("Updated files:", updatedFiles);
+  }
+
   const scheduledAt = new Date(scheduledAtInput);
 
   const scheduledTime = scheduledAt.getTime();
@@ -58,8 +84,14 @@ try {
   const emailId = await prisma.emailJob.findUnique({
     where:{
       id:id
-    }
+    },
+    include: {
+      recipients: true,
+      attachments: true, 
+    },
   })
+  console.log(" Email Data:", emailId);
+
   return emailId;
 } catch (error:any){
   console.log("error",error);

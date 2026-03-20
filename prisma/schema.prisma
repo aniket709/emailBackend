@@ -24,6 +24,7 @@ datasource db {
   recipients   EmailRecipient[]
 
   createdAt    DateTime @default(now())
+  attachments FileUpload[]
 }
 
 model EmailRecipient {
@@ -51,3 +52,14 @@ enum RecipientStatus {
   FAILED
 }
 
+model FileUpload {
+  id         Int      @id @default(autoincrement())
+  url        String
+  publicId   String
+  fileName   String
+  size       Int
+  mimeType   String?
+  createdAt  DateTime @default(now())
+   emailJobId String?   
+  emailJob   EmailJob? @relation(fields: [emailJobId], references: [id])
+}
